@@ -4,9 +4,13 @@ import { charlotteHornetsPlayers } from "@/lib/mockData";
 import PlayerLeaderboard from "./charts/PlayerLeaderboard";
 import ShootingEfficiency from "./charts/ShootingEfficiency";
 import PointsDistribution from "./charts/PointsDistribution";
+import PerformanceRadarChart from "./charts/PerformanceRadarChart";
 
 interface DashboardContentProps {
-  user: any;
+  user: {
+    name?: string;
+    email?: string;
+  };
 }
 
 export default function DashboardContent({ user }: DashboardContentProps) {
@@ -18,11 +22,11 @@ export default function DashboardContent({ user }: DashboardContentProps) {
             <h1 className="text-3xl font-bold text-gray-900">
               Charlotte Hornets Player Insights
             </h1>
-            <p className="text-gray-600">Welcome back, {user.name}</p>
+            <p className="text-gray-600">Welcome back, {user.name || user.email || 'User'}</p>
           </div>
 
           <a
-            href="/api/auth/logout"
+            href="/auth/logout"
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
           >
             Logout
@@ -33,6 +37,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
           <PlayerLeaderboard players={charlotteHornetsPlayers} />
           <ShootingEfficiency players={charlotteHornetsPlayers} />
           <PointsDistribution players={charlotteHornetsPlayers} />
+          <PerformanceRadarChart players={charlotteHornetsPlayers} />
         </div>
       </div>
     </div>
