@@ -87,7 +87,7 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
                   }}
                   className={`
                     w-full flex items-center space-x-3 px-4 py-3 rounded-lg
-                    transition-colors duration-200
+                    transition-colors duration-200 cursor-pointer
                     ${isActive 
                       ? 'bg-hornets-purple text-white' 
                       : 'hover:bg-hornets-light-teal hover:text-white'
@@ -103,10 +103,10 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
         </div>
 
         {/* Footer - positioned at bottom */}
-        <div className="p-6 border-t border-hornets-light-teal">
+        <div className="p-6">
           <button
             onClick={onLogout}
-            className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium hover:bg-hornets-dark-purple rounded-lg transition-colors duration-200"
+            className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 cursor-pointer"
           >
             <LogOut className="w-5 h-5" />
             <span>Logout</span>
