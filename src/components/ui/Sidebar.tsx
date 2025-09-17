@@ -29,15 +29,15 @@ const navigationItems = [
 ];
 
 export default function Sidebar({ activeSection, onSectionChange, onLogout }: SidebarProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
       {/* Mobile overlay */}
-      {isCollapsed && (
+      {isMobileMenuOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setIsCollapsed(false)}
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
       
@@ -48,10 +48,12 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
         bg-hornets-teal text-white
         transition-transform duration-300 ease-in-out
         z-50
-        ${isCollapsed ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         w-64 lg:w-64
+        flex flex-col
       `}>
-        <div className="p-6">
+        {/* Header and Navigation - flex-1 to take remaining space */}
+        <div className="flex-1 p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-2">
@@ -61,7 +63,7 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
               <h2 className="text-lg font-bold">Hornets</h2>
             </div>
             <button 
-              onClick={() => setIsCollapsed(!isCollapsed)}
+              onClick={() => setIsMobileMenuOpen(false)}
               className="lg:hidden hover:bg-hornets-dark-purple p-1 rounded"
             >
               <X className="w-5 h-5" />
@@ -79,7 +81,7 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
                   key={item.id}
                   onClick={() => {
                     onSectionChange(item.id);
-                    setIsCollapsed(false);
+                    setIsMobileMenuOpen(false);
                   }}
                   className={`
                     w-full flex items-center space-x-3 px-4 py-3 rounded-lg
@@ -98,8 +100,8 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
           </nav>
         </div>
 
-        {/* Footer */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-hornets-light-teal">
+        {/* Footer - positioned at bottom */}
+        <div className="p-6 border-t border-hornets-light-teal">
           <button
             onClick={onLogout}
             className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium hover:bg-hornets-dark-purple rounded-lg transition-colors duration-200"
@@ -112,7 +114,7 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
 
       {/* Mobile menu button */}
       <button
-        onClick={() => setIsCollapsed(true)}
+        onClick={() => setIsMobileMenuOpen(true)}
         className="lg:hidden fixed top-4 left-4 z-30 bg-hornets-teal text-white p-2 rounded-lg shadow-lg"
       >
         <Menu className="w-5 h-5" />
