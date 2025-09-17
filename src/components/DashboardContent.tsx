@@ -70,7 +70,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white">
       <div className="flex">
         <Sidebar 
           activeSection={activeSection} 
@@ -78,7 +78,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
           onLogout={handleLogout}
         />
         
-        <div className="flex-1 lg:ml-64 court-pattern">
+        <div className="flex-1 lg:ml-64 bg-white">
           <div className="p-6 max-w-6xl mx-auto">
             <SectionHeader section={activeSection} user={user} />
             

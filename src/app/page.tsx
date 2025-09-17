@@ -164,7 +164,7 @@ export default async function Home() {
                       <svg className="w-6 h-6 text-teal-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-gray-700">Track LaMelo's triple-double rate and playmaking ability</span>
+                      <span className="text-gray-700">Track LaMelo&apos;s triple-double rate and playmaking ability</span>
                     </li>
                     <li className="flex items-start">
                       <svg className="w-6 h-6 text-teal-600 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +300,7 @@ export default async function Home() {
                     </div>
                   </div>
                   <p className="text-gray-700 mb-4">
-                    "Finally, a platform that gives me the deep analytics I need to understand how the Hornets are really performing. The shooting charts are incredible!"
+                    &ldquo;Finally, a platform that gives me the deep analytics I need to understand how the Hornets are really performing. The shooting charts are incredible!&rdquo;
                   </p>
                   <div className="font-semibold text-gray-900">Marcus R.</div>
                   <div className="text-gray-600 text-sm">Basketball Analyst</div>
@@ -327,7 +327,7 @@ export default async function Home() {
                     </div>
                   </div>
                   <p className="text-gray-700 mb-4">
-                    "As a lifelong Hornets fan, this is exactly what I've been waiting for. Being able to track LaMelo's development with real data is amazing."
+                    &ldquo;As a lifelong Hornets fan, this is exactly what I&apos;ve been waiting for. Being able to track LaMelo&apos;s development with real data is amazing.&rdquo;
                   </p>
                   <div className="font-semibold text-gray-900">Sarah T.</div>
                   <div className="text-gray-600 text-sm">Hornets Superfan</div>
@@ -354,7 +354,7 @@ export default async function Home() {
                     </div>
                   </div>
                   <p className="text-gray-700 mb-4">
-                    "The mobile experience is fantastic. I can check player stats and game analytics right from the arena. Perfect for fantasy basketball too."
+                    &ldquo;The mobile experience is fantastic. I can check player stats and game analytics right from the arena. Perfect for fantasy basketball too.&rdquo;
                   </p>
                   <div className="font-semibold text-gray-900">David L.</div>
                   <div className="text-gray-600 text-sm">Sports Data Enthusiast</div>

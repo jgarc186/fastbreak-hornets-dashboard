@@ -43,7 +43,7 @@ export default function PlayerLeaderboard({ players }: PlayerLeaderboardProps) {
                         {index + 1}
                       </span>
                       <div>
-                        <span className="font-medium text-foreground">{player.name}</span>
+                        <span className="font-medium text-hornets-purple">{player.name}</span>
                         <span className="text-hornets-teal text-sm ml-2">({player.position})</span>
                       </div>
                     </div>
