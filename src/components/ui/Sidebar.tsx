@@ -36,20 +36,20 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-opacity-50 z-40 lg:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
       
       {/* Sidebar */}
       <div className={`
-        fixed lg:relative
-        top-0 left-0 h-screen lg:h-screen
+        fixed
+        top-0 left-0 h-screen
         bg-hornets-teal text-white
         transition-transform duration-300 ease-in-out
         z-50
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        w-64 lg:w-64
+        w-64
         flex flex-col
         overflow-y-auto
       `}>

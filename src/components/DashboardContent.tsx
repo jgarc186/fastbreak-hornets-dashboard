@@ -78,7 +78,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
           onLogout={handleLogout}
         />
         
-        <div className="flex-1 lg:ml-0 court-pattern">
+        <div className="flex-1 lg:ml-64 court-pattern">
           <div className="p-6 max-w-6xl mx-auto">
             <SectionHeader section={activeSection} user={user} />
             
