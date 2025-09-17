@@ -44,17 +44,17 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
       {/* Sidebar */}
       <div className={`
         fixed lg:relative
-        top-0 left-0 h-full
+        top-0 left-0 h-screen lg:h-screen
         bg-hornets-teal text-white
         transition-transform duration-300 ease-in-out
         z-50
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         w-64 lg:w-64
         flex flex-col
+        overflow-y-auto
       `}>
-        {/* Header and Navigation - flex-1 to take remaining space */}
-        <div className="flex-1 p-6">
-          {/* Header */}
+        {/* Header */}
+        <div className="p-6 pb-0">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-hornets-purple rounded-full flex items-center justify-center">
@@ -69,8 +69,10 @@ export default function Sidebar({ activeSection, onSectionChange, onLogout }: Si
               <X className="w-5 h-5" />
             </button>
           </div>
+        </div>
 
-          {/* Navigation */}
+        {/* Navigation - flex-1 to take remaining space and allow scrolling */}
+        <div className="flex-1 px-6 overflow-y-auto">
           <nav className="space-y-2">
             {navigationItems.map((item) => {
               const Icon = item.icon;
