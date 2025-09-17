@@ -30,13 +30,13 @@ export default function PointsDistribution({ players }: PointsDistributionProps)
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-gray-900">{data.fullName}</p>
-          <p className="text-gray-600 text-sm">{data.position}</p>
-          <p className="text-blue-600">
+        <div className="stats-card p-3">
+          <p className="font-semibold text-hornets-purple">{data.fullName}</p>
+          <p className="text-hornets-teal text-sm">{data.position}</p>
+          <p className="text-hornets-purple">
             PPG: <span className="font-semibold">{data.points.toFixed(1)}</span>
           </p>
-          <p className="text-gray-600 text-sm">
+          <p className="text-hornets-teal text-sm">
             Games: {data.gamesPlayed}
           </p>
         </div>
@@ -49,8 +49,8 @@ export default function PointsDistribution({ players }: PointsDistributionProps)
   const yAxisMax = Math.ceil(maxPoints / 5) * 5; // Round up to nearest 5
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Points Per Game Distribution</h2>
+    <div>
+      <h2 className="stats-number text-hornets-purple mb-6">Points Per Game Distribution</h2>
       
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -79,18 +79,18 @@ export default function PointsDistribution({ players }: PointsDistributionProps)
             <Tooltip content={<CustomTooltip />} />
             <Bar 
               dataKey="points" 
-              fill="#8b5cf6"
+              fill="var(--hornets-teal)"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
       </div>
       
-      <div className="mt-4 flex justify-between items-center text-sm text-gray-600">
+      <div className="mt-4 flex justify-between items-center text-sm text-hornets-teal">
         <p>Players ranked by scoring average</p>
         <div className="flex items-center space-x-4">
-          <span>Avg: {(players.reduce((sum, p) => sum + p.pointsPerGame, 0) / players.length).toFixed(1)} PPG</span>
-          <span>High: {maxPoints.toFixed(1)} PPG</span>
+          <span className="stats-number text-sm">Avg: {(players.reduce((sum, p) => sum + p.pointsPerGame, 0) / players.length).toFixed(1)} PPG</span>
+          <span className="stats-number text-sm">High: {maxPoints.toFixed(1)} PPG</span>
         </div>
       </div>
     </div>

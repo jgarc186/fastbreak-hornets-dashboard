@@ -29,13 +29,13 @@ export default function ShootingEfficiency({ players }: ShootingEfficiencyProps)
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="font-semibold text-gray-900">{data.fullName}</p>
-          <p className="text-gray-600 text-sm mb-2">{data.position}</p>
-          <p className="text-blue-600">
+        <div className="stats-card p-3">
+          <p className="font-semibold text-hornets-purple">{data.fullName}</p>
+          <p className="text-hornets-teal text-sm mb-2">{data.position}</p>
+          <p className="text-hornets-teal">
             Field Goal: <span className="font-semibold">{data.fieldGoal.toFixed(1)}%</span>
           </p>
-          <p className="text-green-600">
+          <p className="text-hornets-purple">
             3-Point: <span className="font-semibold">{data.threePoint.toFixed(1)}%</span>
           </p>
         </div>
@@ -45,8 +45,8 @@ export default function ShootingEfficiency({ players }: ShootingEfficiencyProps)
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Shooting Efficiency Comparison</h2>
+    <div>
+      <h2 className="stats-number text-hornets-purple mb-6">Shooting Efficiency Comparison</h2>
       
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
@@ -77,20 +77,20 @@ export default function ShootingEfficiency({ players }: ShootingEfficiencyProps)
             <Bar 
               dataKey="fieldGoal" 
               name="Field Goal %" 
-              fill="#3b82f6" 
+              fill="var(--hornets-teal)" 
               radius={[2, 2, 0, 0]}
             />
             <Bar 
               dataKey="threePoint" 
               name="3-Point %" 
-              fill="#10b981" 
+              fill="var(--hornets-purple)" 
               radius={[2, 2, 0, 0]}
             />
           </BarChart>
         </ResponsiveContainer>
       </div>
       
-      <div className="mt-4 text-sm text-gray-600">
+      <div className="mt-4 text-sm text-hornets-teal">
         <p>Compare field goal percentage vs 3-point percentage for all players</p>
       </div>
     </div>

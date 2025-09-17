@@ -56,9 +56,9 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
   const radarData = normalizeStats(selectedPlayer);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4 sm:mb-0">Player Performance Radar</h2>
+        <h2 className="stats-number text-hornets-purple mb-4 sm:mb-0">Player Performance Radar</h2>
         
         <div className="relative">
           <select
@@ -67,7 +67,7 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
               const player = players.find(p => p.id === parseInt(e.target.value));
               if (player) setSelectedPlayer(player);
             }}
-            className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full px-3 py-2 bg-white border border-hornets-light-teal rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-hornets-teal focus:border-hornets-teal"
           >
             {players.map((player) => (
               <option key={player.id} value={player.id}>
@@ -96,11 +96,11 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
             <Radar
               name={selectedPlayer.name}
               dataKey="value"
-              stroke="#3b82f6"
-              fill="#3b82f6"
+              stroke="var(--hornets-teal)"
+              fill="var(--hornets-teal)"
               fillOpacity={0.3}
               strokeWidth={2}
-              dot={{ r: 4, fill: "#3b82f6" }}
+              dot={{ r: 4, fill: "var(--hornets-purple)" }}
             />
           </RadarChart>
         </ResponsiveContainer>
@@ -109,8 +109,8 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
       <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
         {radarData.map((item) => (
           <div key={item.stat} className="text-center">
-            <p className="text-gray-600">{item.stat}</p>
-            <p className="font-semibold text-gray-900">
+            <p className="text-hornets-teal">{item.stat}</p>
+            <p className="stats-number text-hornets-purple text-lg">
               {item.stat.includes('%') 
                 ? `${item.fullValue.toFixed(1)}%` 
                 : item.fullValue.toFixed(1)}
@@ -119,7 +119,7 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
         ))}
       </div>
       
-      <div className="mt-4 text-xs text-gray-600">
+      <div className="mt-4 text-xs text-hornets-teal">
         <p>Performance metrics normalized to 0-100 scale for visual comparison</p>
       </div>
     </div>

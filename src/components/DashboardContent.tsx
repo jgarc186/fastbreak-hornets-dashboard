@@ -1,10 +1,15 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { charlotteHornetsPlayers } from "@/lib/mockData";
 import PlayerLeaderboard from "./charts/PlayerLeaderboard";
 import ShootingEfficiency from "./charts/ShootingEfficiency";
 import PointsDistribution from "./charts/PointsDistribution";
 import PerformanceRadarChart from "./charts/PerformanceRadarChart";
+import Sidebar, { SectionType } from "./ui/Sidebar";
+import SectionHeader from "./ui/SectionHeader";
+import LoadingWrapper from "./ui/LoadingWrapper";
+import OverviewSection from "./OverviewSection";
 
 interface DashboardContentProps {
   user: {
@@ -14,30 +19,73 @@ interface DashboardContentProps {
 }
 
 export default function DashboardContent({ user }: DashboardContentProps) {
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              Charlotte Hornets Player Insights
-            </h1>
-            <p className="text-gray-600">Welcome back, {user.name || user.email || 'User'}</p>
+  const [activeSection, setActiveSection] = useState<SectionType>('overview');
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Simulate loading when switching sections
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [activeSection]);
+
+  const handleLogout = () => {
+    window.location.href = '/auth/logout';
+  };
+
+  const renderActiveSection = () => {
+    switch(activeSection) {
+      case 'overview':
+        return <OverviewSection user={user} />;
+      case 'leaderboard':
+        return (
+          <div className="stats-card p-6">
+            <PlayerLeaderboard players={charlotteHornetsPlayers} />
           </div>
+        );
+      case 'shooting':
+        return (
+          <div className="stats-card p-6">
+            <ShootingEfficiency players={charlotteHornetsPlayers} />
+          </div>
+        );
+      case 'distribution':
+        return (
+          <div className="stats-card p-6">
+            <PointsDistribution players={charlotteHornetsPlayers} />
+          </div>
+        );
+      case 'performance':
+        return (
+          <div className="stats-card p-6">
+            <PerformanceRadarChart players={charlotteHornetsPlayers} />
+          </div>
+        );
+      default:
+        return <OverviewSection user={user} />;
+    }
+  };
 
-          <a
-            href="/auth/logout"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            Logout
-          </a>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <PlayerLeaderboard players={charlotteHornetsPlayers} />
-          <ShootingEfficiency players={charlotteHornetsPlayers} />
-          <PointsDistribution players={charlotteHornetsPlayers} />
-          <PerformanceRadarChart players={charlotteHornetsPlayers} />
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="flex">
+        <Sidebar 
+          activeSection={activeSection} 
+          onSectionChange={setActiveSection}
+          onLogout={handleLogout}
+        />
+        
+        <div className="flex-1 lg:ml-0 court-pattern">
+          <div className="p-6 max-w-6xl mx-auto">
+            <SectionHeader section={activeSection} user={user} />
+            
+            <LoadingWrapper isLoading={isLoading} height="h-96">
+              {renderActiveSection()}
+            </LoadingWrapper>
+          </div>
         </div>
       </div>
     </div>
