@@ -1,13 +1,15 @@
 import { Trophy, Target, TrendingUp, Users } from "lucide-react";
+import { SectionType } from "./ui/Sidebar";
 
 interface OverviewSectionProps {
   user: {
     name?: string;
     email?: string;
   };
+  onSectionChange?: (section: SectionType) => void;
 }
 
-export default function OverviewSection({ user }: OverviewSectionProps) {
+export default function OverviewSection({ user, onSectionChange }: OverviewSectionProps) {
   // Mock data for overview cards
   const overviewStats = [
     {
@@ -88,22 +90,34 @@ export default function OverviewSection({ user }: OverviewSectionProps) {
           Quick Navigation
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors">
+          <button 
+            onClick={() => onSectionChange?.('leaderboard')}
+            className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors cursor-pointer text-left"
+          >
             <h4 className="font-medium text-hornets-purple mb-1">Player Leaderboard</h4>
             <p className="text-sm text-gray-600">View top performers by category</p>
-          </div>
-          <div className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors">
+          </button>
+          <button 
+            onClick={() => onSectionChange?.('shooting')}
+            className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors cursor-pointer text-left"
+          >
             <h4 className="font-medium text-hornets-purple mb-1">Shooting Analysis</h4>
             <p className="text-sm text-gray-600">Analyze team shooting efficiency</p>
-          </div>
-          <div className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors">
+          </button>
+          <button 
+            onClick={() => onSectionChange?.('distribution')}
+            className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors cursor-pointer text-left"
+          >
             <h4 className="font-medium text-hornets-purple mb-1">Scoring Distribution</h4>
             <p className="text-sm text-gray-600">Explore points distribution patterns</p>
-          </div>
-          <div className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors">
+          </button>
+          <button 
+            onClick={() => onSectionChange?.('performance')}
+            className="p-4 border border-hornets-light-teal rounded-lg hover:bg-hornets-light-teal hover:bg-opacity-5 transition-colors cursor-pointer text-left"
+          >
             <h4 className="font-medium text-hornets-purple mb-1">Performance Radar</h4>
             <p className="text-sm text-gray-600">Compare multi-category performance</p>
-          </div>
+          </button>
         </div>
       </div>
 

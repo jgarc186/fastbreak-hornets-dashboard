@@ -39,7 +39,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
   const renderActiveSection = () => {
     switch(activeSection) {
       case 'overview':
-        return <OverviewSection user={user} />;
+        return <OverviewSection user={user} onSectionChange={setActiveSection} />;
       case 'leaderboard':
         return (
           <div className="stats-card p-6">
