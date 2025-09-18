@@ -4,7 +4,7 @@ A modern, high-performance web application showcasing **real-time Charlotte Horn
 
 ## 🚀 Live Demo
 
-[View Live Application](https://fastbreak-hornets-dashboard-roan.vercel.app) *(Deploy to update this link)*
+[View Live Application](https://fastbreak-hornets-dashboard-roan.vercel.app) 
 
 ## ✨ Key Features
 
