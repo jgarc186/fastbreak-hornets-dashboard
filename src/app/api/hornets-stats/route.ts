@@ -1,109 +1,83 @@
-import { NextResponse } from 'next/server';
-import axios from 'axios';
-import { 
-  transformApiDataToPlayer, 
-  type ApiPlayer, 
-  type ApiPlayerStats 
-} from '@/lib/apiTransforms';
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import { transformSupabaseViewToPlayer } from '@/lib/supabaseTransforms';
 
-const BALLDONTLIE_API_BASE = 'https://api.balldontlie.io/v1';
-const HORNETS_TEAM_ID = 4;
-
-async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const apiKey = process.env.BALLDONTLIE_API_KEY;
+    console.log('Fetching Hornets data from Supabase view...');
     
-    if (!apiKey) {
+    // Get sorting parameters from query string
+    const { searchParams } = new URL(request.url);
+    const sortBy = searchParams.get('sort') || 'points_per_game';
+    const order = searchParams.get('order') || 'desc';
+    
+    // Valid sortable columns to prevent SQL injection
+    const validSortColumns = [
+      'points_per_game', 'rebounds_per_game', 'assists_per_game', 
+      'field_goal_percentage', 'three_point_percentage', 'minutes_per_game',
+      'games_played', 'name', 'position'
+    ];
+    
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'points_per_game';
+    const ascending = order === 'asc';
+    
+    // Use the flattened view to avoid PGRST100 ordering error
+    const { data: playersData, error } = await supabase
+      .from('hornets_current_stats')
+      .select('*')
+      .order(sortColumn, { ascending });
+
+    if (error) {
+      console.error('Supabase query error:', error);
       return NextResponse.json(
-        { error: "API key not configured. Please add BALLDONTLIE_API_KEY to your environment variables." },
+        { error: "Failed to fetch player data from database." },
         { status: 500 }
       );
     }
 
-    const headers = {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    };
-
-    // Step 1: Get current Hornets roster
-    console.log('Fetching Hornets roster...');
-    const playersResponse = await axios.get(
-      `${BALLDONTLIE_API_BASE}/players?team_ids[]=${HORNETS_TEAM_ID}&per_page=100`,
-      { headers }
-    );
-
-    const players = playersResponse.data.data;
-    console.log(`Found ${players.length} Hornets players`);
-
-    // Step 2: Get season averages for each player (2024 season)
-    const currentSeason = 2024;
-    const statsPromises = [];
-    
-    for (let i = 0; i < players.length; i++) {
-      const player = players[i];
-      
-      // Add delay between requests to respect rate limits
-      if (i > 0) {
-        await delay(100); // 100ms delay between requests
-      }
-      
-      const statsPromise = axios.get(
-        `${BALLDONTLIE_API_BASE}/season_averages?player_id=${player.id}&season=${currentSeason}`,
-        { headers }
-      ).then(response => response.data.data[0]).catch(error => {
-        console.warn(`Failed to fetch stats for player ${player.id}:`, error.message);
-        return null;
-      });
-      
-      statsPromises.push(statsPromise);
+    if (!playersData || playersData.length === 0) {
+      return NextResponse.json(
+        { 
+          error: "No player data found. Data may need to be synced.",
+          suggestion: "Try running /api/sync-hornets-data to populate the database."
+        },
+        { status: 404 }
+      );
     }
 
-    console.log('Fetching season averages for all players...');
-    const allStats = await Promise.all(statsPromises);
-    const validStats = allStats.filter(Boolean);
-    
-    console.log(`Successfully fetched stats for ${validStats.length} players`);
+    // Transform flattened view data to match existing Player interface
+    const transformedPlayers = playersData.map(transformSupabaseViewToPlayer);
 
-    // Step 3: Transform data to match existing Player interface
-    const transformedPlayers = transformApiDataToPlayer(players, validStats);
-    
-    // Step 4: Sort by points per game and return top performers
-    const sortedPlayers = transformedPlayers.sort((a, b) => b.pointsPerGame - a.pointsPerGame);
+    console.log(`Successfully fetched ${transformedPlayers.length} players from Supabase view`);
 
-    console.log(`Returning ${sortedPlayers.length} players with stats`);
+    // Get the most recent sync time for data freshness info
+    const { data: lastSync } = await supabase
+      .from('data_sync_log')
+      .select('completed_at, status')
+      .eq('sync_type', 'stats')
+      .eq('status', 'success')
+      .order('completed_at', { ascending: false })
+      .limit(1);
+
+    const lastUpdated = lastSync && lastSync.length > 0 ? lastSync[0].completed_at : null;
 
     return NextResponse.json({
-      players: sortedPlayers,
-      lastUpdated: new Date().toISOString(),
-      source: "Ball Don't Lie API",
-      season: currentSeason
+      players: transformedPlayers,
+      lastUpdated: lastUpdated || new Date().toISOString(),
+      source: "Supabase Cache",
+      season: 2024,
+      isCached: true,
+      sortedBy: sortColumn,
+      sortOrder: order
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=1800'
+        // Cache for 5 minutes, serve stale for 30 minutes while revalidating
+      }
     });
 
   } catch (error: unknown) {
-    console.error('Error fetching Hornets stats:', error);
-    
-    // Handle different types of errors
-    if (error instanceof Error && 'response' in error) {
-      const axiosError = error as { response?: { status: number } };
-      
-      if (axiosError.response?.status === 401) {
-        return NextResponse.json(
-          { error: "Invalid API key. Please check your BALLDONTLIE_API_KEY." },
-          { status: 401 }
-        );
-      }
-      
-      if (axiosError.response?.status === 429) {
-        return NextResponse.json(
-          { error: "Rate limit exceeded. Please try again in a moment." },
-          { status: 429 }
-        );
-      }
-    }
+    console.error('Error fetching Hornets stats from Supabase:', error);
     
     return NextResponse.json(
       { error: "Failed to fetch player stats. Please try again later." },

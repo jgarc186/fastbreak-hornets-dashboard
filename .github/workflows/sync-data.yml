@@ -1,0 +1,43 @@
+name: Daily Hornets Data Sync
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # 6 AM EST (10 AM UTC) - Daily during basketball season
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Trigger Hornets data sync
+        run: |
+          response=$(curl -s -o response.txt -w "%{http_code}" -X POST "${{ vars.VERCEL_APP_URL }}/api/sync-hornets-data" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.SYNC_API_KEY }}")
+          
+          echo "HTTP Status: $response"
+          echo "Response Body:"
+          cat response.txt
+          
+          if [ "$response" -ge 200 ] && [ "$response" -lt 300 ]; then
+            echo "✅ Data sync successful"
+          else
+            echo "❌ Data sync failed with status $response"
+            exit 1
+          fi
+
+      - name: Get sync status
+        if: always()
+        run: |
+          echo "Checking sync status..."
+          curl -s "${{ vars.VERCEL_APP_URL }}/api/sync-hornets-data" | jq '.'
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "🚨 Data sync failed - manual intervention may be required"
+          # Additional notification logic can be added here (Slack, email, etc.)
