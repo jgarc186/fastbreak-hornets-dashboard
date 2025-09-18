@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { charlotteHornetsPlayers } from '@/lib/mockData';
 import { Player } from '@/types/player';
 
 export async function GET(request: NextRequest) {
@@ -9,7 +8,21 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit');
     const position = searchParams.get('position');
 
-    let processedPlayers: Player[] = [...charlotteHornetsPlayers];
+    // Get data from the new API endpoint
+    const baseUrl = process.env.NODE_ENV === 'production' 
+      ? process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : 'https://your-domain.com'
+      : 'http://localhost:3002';
+    
+    const hornetsResponse = await fetch(`${baseUrl}/api/hornets-stats`);
+    
+    if (!hornetsResponse.ok) {
+      throw new Error('Failed to fetch Hornets data');
+    }
+    
+    const hornetsData = await hornetsResponse.json();
+    let processedPlayers: Player[] = [...hornetsData.players];
 
     // Filter by position if specified
     if (position && position !== 'all') {
@@ -47,7 +60,7 @@ export async function GET(request: NextRequest) {
     }));
 
     // Add team statistics
-    const teamStats = calculateTeamStats(charlotteHornetsPlayers);
+    const teamStats = calculateTeamStats(hornetsData.players);
 
     return NextResponse.json({
       players: enhancedPlayers,
@@ -58,7 +71,9 @@ export async function GET(request: NextRequest) {
         position
       },
       count: enhancedPlayers.length,
-      totalPlayers: charlotteHornetsPlayers.length
+      totalPlayers: hornetsData.players.length,
+      lastUpdated: hornetsData.lastUpdated,
+      source: hornetsData.source
     });
 
   } catch (error) {
