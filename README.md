@@ -67,7 +67,7 @@ A modern, high-performance web application showcasing **real-time Charlotte Horn
 ### 1. Clone & Install
 
 ```bash
-git clone https://github.com/yourusername/fastbreak-hornets-dashboard.git
+git clone git@github.com:jgarc186/fastbreak-hornets-dashboard.git
 cd fastbreak-hornets-dashboard
 npm install
 ```
