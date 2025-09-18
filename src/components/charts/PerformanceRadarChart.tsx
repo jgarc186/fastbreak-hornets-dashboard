@@ -6,10 +6,13 @@ import { useState } from 'react';
 
 interface PerformanceRadarChartProps {
   players: Player[];
+  loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
-export default function PerformanceRadarChart({ players }: PerformanceRadarChartProps) {
-  const [selectedPlayer, setSelectedPlayer] = useState<Player>(players[0]);
+export default function PerformanceRadarChart({ players, loading = false, error, onRetry }: PerformanceRadarChartProps) {
+  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(players.length > 0 ? players[0] : null);
 
   // Normalize stats to 0-100 scale for radar chart
   const normalizeStats = (player: Player) => {
@@ -53,7 +56,87 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
     ];
   };
 
-  const radarData = normalizeStats(selectedPlayer);
+  const radarData = selectedPlayer ? normalizeStats(selectedPlayer) : [];
+
+  const renderLoadingSkeleton = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div className="h-6 bg-hornets-light-teal bg-opacity-20 rounded w-48 mb-4 sm:mb-0 animate-pulse"></div>
+        <div className="h-10 bg-hornets-light-teal bg-opacity-20 rounded w-40 animate-pulse"></div>
+      </div>
+      <div className="h-80 bg-hornets-light-teal bg-opacity-10 rounded flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-pulse">
+            <div className="h-4 bg-hornets-light-teal bg-opacity-30 rounded w-32 mb-2 mx-auto"></div>
+            <div className="h-3 bg-hornets-light-teal bg-opacity-20 rounded w-24 mx-auto"></div>
+          </div>
+          <p className="text-hornets-teal mt-4">Loading performance data...</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderErrorState = () => (
+    <div className="h-80 border-2 border-dashed border-red-200 bg-red-50 rounded flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-hornets-purple font-semibold mb-2">
+          Unable to load performance radar data
+        </div>
+        {error && <p className="text-hornets-teal text-sm mb-4">{error}</p>}
+        {onRetry && (
+          <button 
+            onClick={onRetry}
+            className="bg-hornets-teal text-white px-4 py-2 rounded hover:bg-hornets-purple transition-colors"
+          >
+            Try Again
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderEmptyState = () => (
+    <div className="h-80 border-2 border-dashed border-hornets-light-teal border-opacity-30 rounded flex items-center justify-center">
+      <div className="text-center text-hornets-teal">
+        <div className="font-semibold mb-2">No performance data available</div>
+        <p className="text-sm">Check back later for updated stats</p>
+      </div>
+    </div>
+  );
+
+  // Update selected player when players array changes
+  if (players.length > 0 && !selectedPlayer) {
+    setSelectedPlayer(players[0]);
+  } else if (selectedPlayer && !players.find(p => p.id === selectedPlayer.id)) {
+    setSelectedPlayer(players.length > 0 ? players[0] : null);
+  }
+
+  if (loading) {
+    return (
+      <div>
+        <h2 className="stats-number text-hornets-purple mb-6">Player Performance Radar</h2>
+        {renderLoadingSkeleton()}
+      </div>
+    );
+  }
+
+  if (error && players.length === 0) {
+    return (
+      <div>
+        <h2 className="stats-number text-hornets-purple mb-6">Player Performance Radar</h2>
+        {renderErrorState()}
+      </div>
+    );
+  }
+
+  if (players.length === 0) {
+    return (
+      <div>
+        <h2 className="stats-number text-hornets-purple mb-6">Player Performance Radar</h2>
+        {renderEmptyState()}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -62,7 +145,7 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
         
         <div className="relative">
           <select
-            value={selectedPlayer.id}
+            value={selectedPlayer?.id || ''}
             onChange={(e) => {
               const player = players.find(p => p.id === parseInt(e.target.value));
               if (player) setSelectedPlayer(player);
@@ -78,50 +161,54 @@ export default function PerformanceRadarChart({ players }: PerformanceRadarChart
         </div>
       </div>
 
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={radarData}>
-            <PolarGrid />
-            <PolarAngleAxis 
-              dataKey="stat" 
-              className="text-sm"
-              tick={{ fontSize: 12 }}
-            />
-            <PolarRadiusAxis 
-              domain={[0, 100]} 
-              className="text-xs"
-              tick={{ fontSize: 10 }}
-              tickCount={6}
-            />
-            <Radar
-              name={selectedPlayer.name}
-              dataKey="value"
-              stroke="var(--hornets-teal)"
-              fill="var(--hornets-teal)"
-              fillOpacity={0.3}
-              strokeWidth={2}
-              dot={{ r: 4, fill: "var(--hornets-purple)" }}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
-      
-      <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
-        {radarData.map((item) => (
-          <div key={item.stat} className="text-center">
-            <p className="text-hornets-teal">{item.stat}</p>
-            <p className="stats-number text-hornets-purple text-lg">
-              {item.stat.includes('%') 
-                ? `${item.fullValue.toFixed(1)}%` 
-                : item.fullValue.toFixed(1)}
-            </p>
+      {selectedPlayer && (
+        <>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={radarData}>
+                <PolarGrid />
+                <PolarAngleAxis 
+                  dataKey="stat" 
+                  className="text-sm"
+                  tick={{ fontSize: 12 }}
+                />
+                <PolarRadiusAxis 
+                  domain={[0, 100]} 
+                  className="text-xs"
+                  tick={{ fontSize: 10 }}
+                  tickCount={6}
+                />
+                <Radar
+                  name={selectedPlayer.name}
+                  dataKey="value"
+                  stroke="var(--hornets-teal)"
+                  fill="var(--hornets-teal)"
+                  fillOpacity={0.3}
+                  strokeWidth={2}
+                  dot={{ r: 4, fill: "var(--hornets-purple)" }}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
           </div>
-        ))}
-      </div>
-      
-      <div className="mt-4 text-xs text-hornets-teal">
-        <p>Performance metrics normalized to 0-100 scale for visual comparison</p>
-      </div>
+          
+          <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+            {radarData.map((item) => (
+              <div key={item.stat} className="text-center">
+                <p className="text-hornets-teal">{item.stat}</p>
+                <p className="stats-number text-hornets-purple text-lg">
+                  {item.stat.includes('%') 
+                    ? `${item.fullValue.toFixed(1)}%` 
+                    : item.fullValue.toFixed(1)}
+                </p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="mt-4 text-xs text-hornets-teal">
+            <p>Performance metrics normalized to 0-100 scale for visual comparison</p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
