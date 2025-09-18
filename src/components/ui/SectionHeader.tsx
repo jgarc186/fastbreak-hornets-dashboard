@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { SectionType } from "./Sidebar";
 
 interface SectionHeaderProps {
@@ -31,36 +34,24 @@ const sectionConfig = {
   }
 };
 
-export default function SectionHeader({ section, user }: SectionHeaderProps) {
-  const config = sectionConfig[section];
-  const currentTime = new Date().toLocaleString();
+export default function SectionHeader({ section, user }) {
+  const [currentTime, setCurrentTime] = useState(new Date().toLocaleString());
 
-  if (section === 'overview') {
-    return (
-      <div className="stats-card p-6 mb-6">
-        <h1 className="stats-number text-hornets-purple">
-          Charlotte Hornets Player Insights
-        </h1>
-        <p className="text-hornets-teal mt-2">
-          Welcome back, {user?.name || user?.email || 'User'}
-        </p>
-        <p className="text-sm text-gray-500 mt-1">
-          Last updated: {currentTime}
-        </p>
-      </div>
-    );
-  }
+  useEffect(() => {
+    // This will only run on the client-side after the component mounts
+    setCurrentTime(new Date().toLocaleString());
+  }, []);
 
   return (
-    <div className="stats-card p-6 mb-6">
-      <div className="border-l-4 border-hornets-teal pl-4">
-        <h2 className="stats-number text-hornets-purple mb-2">
-          {config.title}
-        </h2>
-        <p className="text-hornets-teal text-sm leading-relaxed">
-          {config.description}
-        </p>
-        <p className="text-xs text-gray-500 mt-3">
+    <div className="stats-card-header">
+      <div className="flex items-center">
+        <h1 className="text-2xl font-bold text-hornets-purple capitalize">
+          {section}
+        </h1>
+      </div>
+      <div className="mt-2 text-sm text-gray-500">
+        <p>Welcome back, {user?.name || user?.email || 'User'}</p>
+        <p className="mt-1">
           Last updated: {currentTime}
         </p>
       </div>
