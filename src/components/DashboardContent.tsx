@@ -21,7 +21,6 @@ interface DashboardContentProps {
 
 export default function DashboardContent({ user }: DashboardContentProps) {
   const [activeSection, setActiveSection] = useState<SectionType>('overview');
-  const [isLoading, setIsLoading] = useState(false);
   const [playersData, setPlayersData] = useState<Player[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
@@ -71,16 +70,6 @@ export default function DashboardContent({ user }: DashboardContentProps) {
   useEffect(() => {
     fetchHornetsStats();
   }, [fetchHornetsStats]);
-
-  // Simulate loading when switching sections
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [activeSection]);
 
   const handleLogout = () => {
     window.location.href = '/auth/logout';
@@ -244,7 +233,7 @@ export default function DashboardContent({ user }: DashboardContentProps) {
           <div className="p-6 max-w-6xl mx-auto">
             <SectionHeader section={activeSection} user={user} />
             
-            <LoadingWrapper isLoading={isLoading} height="h-96">
+            <LoadingWrapper isLoading={dataLoading && playersData.length === 0} height="h-96">
               {renderActiveSection()}
             </LoadingWrapper>
           </div>
